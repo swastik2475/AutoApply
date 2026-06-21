@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Auto Job Apply</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="container">
+  <h1>📧 Auto Job Apply Mailer</h1>
+  <p class="subtitle">Apply to companies automatically with a personalized email</p>
+
+  <!-- STEP 0: Resume Upload (one time) -->
+  <div class="card" id="resumeCard">
+    <h2>1. Your Resume</h2>
+    <div id="resumeStatus" class="status-box">No resume uploaded yet.</div>
+    <input type="file" id="resumeFile" accept=".pdf,.doc,.docx" />
+    <button id="uploadResumeBtn">Upload / Update Resume</button>
+  </div>
+
+  <!-- STEP 1: Mode Toggle -->
+  <div class="card">
+    <h2>2. How do you want to add the job?</h2>
+    <div class="toggle-group">
+      <button class="toggle-btn active" id="manualBtn" onclick="setMode('manual')">✍️ Manual Entry</button>
+      <button class="toggle-btn" id="autoBtn" onclick="setMode('auto')">🤖 Auto Extract (Image/JD)</button>
+    </div>
+  </div>
+
+  <!-- MANUAL FORM -->
+  <div class="card" id="manualForm">
+    <h2>Job Details</h2>
+    <label>Company Name</label>
+    <input type="text" id="companyName" placeholder="e.g. Tishitu Pvt Ltd" />
+
+    <label>HR Email</label>
+    <input type="email" id="hrEmail" placeholder="hr@company.com" />
+
+    <label>Job Role</label>
+    <input type="text" id="jobRole" placeholder="e.g. AI Engineer" />
+
+    <label>Job Description</label>
+    <textarea id="jdText" rows="6" placeholder="Paste the JD here..."></textarea>
+
+    <button id="draftManualBtn" class="primary-btn">✉️ Generate & Preview Email</button>
+  </div>
+
+  <!-- AUTO EXTRACT FORM -->
+  <div class="card hidden" id="autoForm">
+    <h2>Upload JD Image or Paste Text</h2>
+    <input type="file" id="jdImage" accept="image/*" />
+    <p class="or-text">— OR —</p>
+    <textarea id="jdRawText" rows="5" placeholder="Paste JD text / job post here..."></textarea>
+
+    <button id="extractBtn">🔍 Extract Details</button>
+
+    <div id="extractedPreview" class="hidden extracted-box">
+      <h3>Confirm Extracted Details</h3>
+      <label>Company Name</label>
+      <input type="text" id="extCompany" />
+      <label>HR Email</label>
+      <input type="email" id="extEmail" />
+      <label>Job Role</label>
+      <input type="text" id="extRole" />
+      <label>Job Description</label>
+      <textarea id="extJD" rows="5"></textarea>
+
+      <button id="draftAutoBtn" class="primary-btn">✉️ Generate & Preview Email</button>
+    </div>
+  </div>
+
+  <!-- MAIL PREVIEW (shown before sending — final confirmation step) -->
+  <div class="card hidden" id="previewCard">
+    <h2>3. 📨 Preview Email Before Sending</h2>
+    <div class="status-box" id="previewMeta"></div>
+    <div id="previewBody" class="preview-body"></div>
+    <div class="preview-actions">
+      <button id="cancelSendBtn" class="cancel-btn">✖ Cancel</button>
+      <button id="confirmSendBtn" class="send-btn">✅ Send Application</button>
+    </div>
+  </div>
+
+  <!-- RESPONSE MESSAGE -->
+  <div id="responseMsg" class="hidden"></div>
+
+  <!-- APPLICATION HISTORY -->
+  <div class="card">
+    <h2>📊 Recent Applications</h2>
+    <button id="refreshHistoryBtn">🔄 Refresh</button>
+    <table id="historyTable">
+      <thead>
+        <tr>
+          <th>Company</th>
+          <th>HR Email</th>
+          <th>Applied On</th>
+          <th>Status</th>
+          <th>Mail Opened</th>
+        </tr>
+      </thead>
+      <tbody id="historyBody">
+        <tr><td colspan="5" class="empty-row">No applications yet</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<script src="config.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

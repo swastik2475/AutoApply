@@ -1,0 +1,430 @@
+{
+  "name": "Follow-up Checker",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "id": "77f062fb-9f07-431d-aad3-3d3197fc093d",
+      "name": "Daily 9AM",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1376,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1WdTOz6G9QtmP4YVGIfWhhAs8JqX7BTsLfaHyjOOL--g",
+          "mode": "list",
+          "cachedResultName": "resume_update_sheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1WdTOz6G9QtmP4YVGIfWhhAs8JqX7BTsLfaHyjOOL--g/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Applications.csv",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "id": "0bf2f1e6-6f74-4bdb-8613-a55402ebbc8d",
+      "name": "Read Applications",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        -1136,
+        160
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "MWOBzqOFUQ29BAhj",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "sent",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "leftValue": "={{ $json.applied_date }}",
+              "rightValue": "={{ $now.minus({ days: 7 }).toISO() }}",
+              "operator": {
+                "type": "dateTime",
+                "operation": "before"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "c95edb0f-fd05-47fd-8b30-2d3715c7c2a0",
+      "name": "Filter: 7+ Days Old, Status=Sent",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2,
+      "position": [
+        -896,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "606f8115-92f3-4f44-8793-9cfd2204b2b9",
+      "name": "Loop Each Application",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -688,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "filters": {
+          "q": "=from:{{ $json.hr_email }} after:{{ $json.applied_date.split('T')[0] }}"
+        }
+      },
+      "id": "0bda5d2b-fc57-449b-95c1-fe5efd03c8de",
+      "name": "Search Gmail for Reply",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -448,
+        80
+      ],
+      "webhookId": "ca52f97d-9cbf-4fa1-82e1-72d2170accca",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "znc1yn6eKB2kD4ai",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "b9dc553c-aeb5-4838-8740-8811e1a459e9",
+      "name": "Check: Reply Found?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -224,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1n1nNcOB7-O8s_mY1E4TZOii1nzKTTi4u1MzCt0eOgEY",
+          "mode": "list",
+          "cachedResultName": "Applications",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1n1nNcOB7-O8s_mY1E4TZOii1nzKTTi4u1MzCt0eOgEY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Applications.csv",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "c2d13380-257e-4d0f-b698-f860485643c8",
+      "name": "Mark as Responded",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        0,
+        0
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "MWOBzqOFUQ29BAhj",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Write a short, polite follow-up email (under 80 words) for a job application sent 7 days ago with no response yet. Reference the role and company naturally, and gently ask for an update. Output only the HTML email body.\n\nJob Role: {{ $('Loop Each Application').item.json.job_role }}\nCompany: {{ $('Loop Each Application').item.json.company_name }}",
+        "options": {
+          "systemMessage": "You are an expert career coach writing concise, polite follow-up emails. Output only the email body in HTML, no subject line."
+        }
+      },
+      "id": "74876f7b-ca75-4c48-96a9-8359ae979d7f",
+      "name": "AI Agent: Write Followup",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        0,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "id": "b9a7fa64-2cca-4736-97e3-af185dee2e32",
+      "name": "Groq Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -48,
+        320
+      ],
+      "credentials": {
+        "groqApi": {
+          "id": "QrEQu7Y0NaI7HR1E",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Loop Each Application').item.json.hr_email }}",
+        "subject": "=Following up: Application for {{ $('Loop Each Application').item.json.job_role }}",
+        "message": "={{ $json.output }}",
+        "options": {}
+      },
+      "id": "738bbda4-66a4-40d3-a88e-518f448d8b33",
+      "name": "Send Followup Email",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        224,
+        192
+      ],
+      "webhookId": "df85791c-6700-4898-b709-d4928edebe14",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "znc1yn6eKB2kD4ai",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1WdTOz6G9QtmP4YVGIfWhhAs8JqX7BTsLfaHyjOOL--g",
+          "mode": "list",
+          "cachedResultName": "resume_update_sheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1WdTOz6G9QtmP4YVGIfWhhAs8JqX7BTsLfaHyjOOL--g/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Applications.csv",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "app_id"
+          ],
+          "value": {
+            "app_id": "={{ $('Loop Each Application').item.json.app_id }}",
+            "status": "followup_sent"
+          }
+        },
+        "options": {}
+      },
+      "id": "0c777ac6-cf4b-4586-915f-ff7fe2fce829",
+      "name": "Mark Followup Sent",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        448,
+        192
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "MWOBzqOFUQ29BAhj",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Daily 9AM": {
+      "main": [
+        [
+          {
+            "node": "Read Applications",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Applications": {
+      "main": [
+        [
+          {
+            "node": "Filter: 7+ Days Old, Status=Sent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter: 7+ Days Old, Status=Sent": {
+      "main": [
+        [
+          {
+            "node": "Loop Each Application",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Each Application": {
+      "main": [
+        [
+          {
+            "node": "Search Gmail for Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Gmail for Reply": {
+      "main": [
+        [
+          {
+            "node": "Check: Reply Found?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check: Reply Found?": {
+      "main": [
+        [
+          {
+            "node": "Mark as Responded",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent: Write Followup",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent: Write Followup",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent: Write Followup": {
+      "main": [
+        [
+          {
+            "node": "Send Followup Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Followup Email": {
+      "main": [
+        [
+          {
+            "node": "Mark Followup Sent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "6b7eb921-d3c8-4a59-8b8b-73925b4834aa",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "81bbb6cc1b059138ba4fdd944ef70b9de76dd853ed6f204dfc5228f4c15b911b"
+  },
+  "nodeGroups": [],
+  "id": "ZThJ5HJlDg3Yj7fX",
+  "tags": []
+}

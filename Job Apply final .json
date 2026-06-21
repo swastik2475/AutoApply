@@ -1,0 +1,1032 @@
+{
+  "name": "Job Apply final",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "apply",
+        "responseMode": "responseNode",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -1152,
+        576
+      ],
+      "id": "64fe9c2b-2e2f-4bf2-b25a-5204f66cdbf6",
+      "webhookId": "a0cd00be-2eba-4acf-b596-b1c99cc68383"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.action }}",
+                    "rightValue": "=upload_resume",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "a6028005-f025-40c6-ba0f-e96440e3259c"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": " upload_resume"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "8c656edc-7c30-4d1e-a4d9-29b209f18a7a",
+                    "leftValue": "={{ $json.body.action }}",
+                    "rightValue": "extract",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "extract"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "40d11118-e53c-4be8-85fb-16a573cfa184",
+                    "leftValue": "={{ $json.body.action }}",
+                    "rightValue": "draft_email",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "draft_email"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "6b664938-3c0c-4641-9b4d-0aa48ab77107",
+                    "leftValue": "={{ $json.body.action }}",
+                    "rightValue": "submit_application",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "submit_application"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "fd0cae04-9a5f-4873-9de0-23733bed9686",
+                    "leftValue": "={{ $json.body.action }}",
+                    "rightValue": "get_history",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "get_history"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "name": "Switch: Action",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [
+        -880,
+        976
+      ],
+      "id": "2c71ebba-f318-4c7c-bc74-d79631926dd1"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "binaryData": true,
+        "binaryPropertyName": "resume",
+        "name": "={{ $json.body.resume_name || 'resume.pdf' }}",
+        "options": {}
+      },
+      "name": "Upload to Drive",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 1,
+      "position": [
+        -432,
+        16
+      ],
+      "id": "a1ffb7a4-5ae1-45cc-8a69-feb66defcf7d",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "cGmYy1nSpRYpZWk4",
+          "name": "Google Drive OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "operation": "append",
+        "sheetId": "1WdTOz6G9QtmP4YVGIfWhhAs8JqX7BTsLfaHyjOOL--g",
+        "range": "A:C",
+        "options": {}
+      },
+      "name": "Save Resume Link",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "2179259d-16cc-4d5d-9be9-86e7c6ad3541",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "MWOBzqOFUQ29BAhj",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"status\": \"resume_saved\", \"resume_file_id\": \"{{ $json.resume_file_id }}\" }",
+        "options": {}
+      },
+      "name": "Respond: Resume Saved",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        208,
+        16
+      ],
+      "id": "741d19fa-34dd-41c2-8b04-fe55d9ecc1fb"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $binary.jd_image }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "name": "Check: Has Image",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -448,
+        320
+      ],
+      "id": "123f8e37-118c-43e7-945b-3a1ba277de4a"
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "binaryPropertyName": "jd_image",
+        "options": {}
+      },
+      "name": "Convert Image to Base64",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        16,
+        208
+      ],
+      "id": "db4d9b22-593b-4da2-9bc8-b8667bb1ae96"
+    },
+    {
+      "parameters": {
+        "authentication": "headerAuth",
+        "requestMethod": "POST",
+        "url": "https://api.groq.com/openai/v1/chat/completions",
+        "jsonParameters": true,
+        "options": {},
+        "bodyParametersJson": "={\n  \"model\": \"meta-llama/llama-4-scout-17b-16e-instruct\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are a precise data extraction assistant. Read the job posting image and return ONLY a raw JSON object (no markdown, no explanation) with keys: company_name, hr_email, job_role, jd_text. If hr_email is not visible in the image, return an empty string for it. jd_text should be the full job description text you can read from the image.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": [\n        { \"type\": \"text\", \"text\": \"Extract the job details from this job posting image.\" },\n        { \"type\": \"image_url\", \"image_url\": { \"url\": \"data:image/jpeg;base64,{{ $json.data }}\" } }\n      ]\n    }\n  ],\n  \"temperature\": 0.1,\n  \"max_tokens\": 1024\n}"
+      },
+      "name": "Groq Vision: Extract JD",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        272,
+        256
+      ],
+      "id": "926307a5-4244-4faa-a2f0-fb55de21eaae",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "BS32HaeDuL0mrEdZ",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $input.first().json.choices[0].message.content;\nlet cleaned = raw.trim().replace(/^```json/i, '').replace(/^```/, '').replace(/```$/, '').trim();\nlet parsed;\ntry {\n  parsed = JSON.parse(cleaned);\n} catch (e) {\n  parsed = { company_name: '', hr_email: '', job_role: '', jd_text: cleaned };\n}\nreturn [{ json: parsed }];\n"
+      },
+      "name": "Parse Vision Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [
+        496,
+        208
+      ],
+      "id": "459302ff-a193-400d-8fbd-4e0ecaaa6787"
+    },
+    {
+      "parameters": {
+        "text": "=Extract company_name, hr_email, job_role, and jd_text from the following job posting text. If hr_email is not found, return an empty string for it.\n\nTEXT:\n{{ $json.body.jd_raw_text }}",
+        "options": {
+          "systemMessage": "You are a precise data extraction assistant. Always return structured JSON matching the schema exactly. No explanations, no markdown."
+        }
+      },
+      "name": "AI Agent: Extract JD",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1,
+      "position": [
+        -192,
+        448
+      ],
+      "id": "58261927-bd90-4b4d-ae8a-07fce902fecf"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "name": "Groq Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -224,
+        624
+      ],
+      "id": "8d2fae6e-03e4-4dfd-9551-a573fda0183f",
+      "credentials": {
+        "groqApi": {
+          "id": "QrEQu7Y0NaI7HR1E",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "name": "Structured Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1,
+      "position": [
+        -64,
+        624
+      ],
+      "id": "b62d14b8-d2d3-40a5-a476-93c1eaf3a7bd"
+    },
+    {
+      "parameters": {},
+      "name": "Merge: Extracted Fields",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        736,
+        320
+      ],
+      "id": "a7b0108b-8ada-4d39-8adc-35f889ab25bc"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json.output ? $json.output : $json }}",
+        "options": {}
+      },
+      "name": "Respond: Extracted Fields",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        960,
+        320
+      ],
+      "id": "f004a4d4-e3a3-40bc-b7a4-fcd20fb05fd1"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "sheetId": "1WdTOz6G9QtmP4YVGIfWhhAs8JqX7BTsLfaHyjOOL--g",
+        "range": "A:C",
+        "options": {}
+      },
+      "name": "Get Resume Link (Draft)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 1,
+      "position": [
+        -432,
+        784
+      ],
+      "id": "7ad7547f-74f1-494a-9e9d-b6e6c1b3421b",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "MWOBzqOFUQ29BAhj",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "text": "=Write a warm, professional, personalized job application email for the role below. Keep it under 150 words-300 words. Reference 2-3 relevant skills/projects naturally based on the JD (AI/ML engineering, RAG systems, FastAPI backend, production deployment experience). Do NOT use placeholder brackets like [Your Name] - sign off as 'Swastik'. Write it as a final, ready-to-send email body, HTML formatted with simple <p> tags only.\n\nJob Role: {{ $('Webhook').item.json.body.job_role }}\nCompany: {{ $('Webhook').item.json.body.company_name }}\nJob Description: {{ $('Webhook').item.json.body.jd_text }}",
+        "options": {
+          "systemMessage": "You are an expert career coach writing concise, confident, genuinely personalized job application emails. Output only the email body in HTML, no subject line, no markdown fences, no explanations."
+        }
+      },
+      "name": "AI Agent: Write Email",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1,
+      "position": [
+        -192,
+        784
+      ],
+      "id": "b3bb237e-b8d0-4d8a-aa0b-fd32d03077e0"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "name": "Groq Chat Model2",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -208,
+        944
+      ],
+      "id": "f8a19d9f-7946-4561-aaa3-10b10ad70b7c",
+      "credentials": {
+        "groqApi": {
+          "id": "QrEQu7Y0NaI7HR1E",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $('AI Agent: Write Email').item.json.output;\nconst webhookBody = $('Webhook').item.json.body;\nconst subject = `Application for ${webhookBody.job_role} - ${webhookBody.company_name}`;\nreturn [{ json: {\n  email_subject: subject,\n  email_body: body,\n  company_name: webhookBody.company_name,\n  hr_email: webhookBody.hr_email,\n  job_role: webhookBody.job_role,\n  jd_text: webhookBody.jd_text\n} }];\n"
+      },
+      "name": "Build Draft Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [
+        48,
+        784
+      ],
+      "id": "bbda57d1-ed68-43bb-ac9b-070b1ae87c82"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {}
+      },
+      "name": "Respond: Email Draft",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        272,
+        784
+      ],
+      "id": "d5f153cc-5036-4d31-a74a-d38c06c856b1"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.body.resume_file_id }}",
+          "mode": "id"
+        },
+        "binaryPropertyName": "resume",
+        "options": {}
+      },
+      "name": "Get Resume File",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 1,
+      "position": [
+        -432,
+        1056
+      ],
+      "id": "2c57a949-0d56-4084-861e-7f80bb885209",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "cGmYy1nSpRYpZWk4",
+          "name": "Google Drive OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const appId = Date.now().toString();\nreturn [{ json: { ...$('Webhook').item.json.body, app_id: appId }, binary: $input.first().binary }];\n"
+      },
+      "name": "Generate App ID",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [
+        -192,
+        1056
+      ],
+      "id": "ec2fea48-da10-4fa8-b359-e97aca2bc780"
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "subject": "={{ $json.email_subject }}",
+        "includeHtml": true,
+        "htmlMessage": "={{ $json.email_body }}\n<img src=\"https://YOUR-N8N-URL/webhook/track?app_id={{ $json.app_id }}\" width=\"1\" height=\"1\" style=\"display:none\">",
+        "message": "=",
+        "toList": [
+          "={{ $json.hr_email }}"
+        ],
+        "additionalFields": {
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {
+                "property": "resume"
+              }
+            ]
+          }
+        }
+      },
+      "name": "Send Application Email",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 1,
+      "position": [
+        48,
+        1056
+      ],
+      "id": "f065bc9c-6b4f-4dee-bb4a-44b26807416c",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "znc1yn6eKB2kD4ai",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "operation": "append",
+        "sheetId": "1WdTOz6G9QtmP4YVGIfWhhAs8JqX7BTsLfaHyjOOL--g",
+        "options": {
+          "valueInputMode": "RAW"
+        }
+      },
+      "name": "Log Application",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 1,
+      "position": [
+        288,
+        1056
+      ],
+      "id": "9691b192-2c37-4b5f-b64b-4e472cfce564",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "MWOBzqOFUQ29BAhj",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"status\": \"sent\" }",
+        "options": {}
+      },
+      "name": "Respond: Sent",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        512,
+        1056
+      ],
+      "id": "162c8f8b-27a8-4a80-9d1d-cc34e29468e2"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "sheetId": "1WdTOz6G9QtmP4YVGIfWhhAs8JqX7BTsLfaHyjOOL--g",
+        "range": "A:H",
+        "options": {}
+      },
+      "name": "Read All Applications",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 1,
+      "position": [
+        -432,
+        1328
+      ],
+      "id": "ac63fe0a-be0e-485e-80b6-3528ad13c06c",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "MWOBzqOFUQ29BAhj",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {}
+      },
+      "name": "Respond: History",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        -192,
+        1328
+      ],
+      "id": "067fe0be-3159-49dd-ad14-cf2a5d85225b"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"error\": \"invalid action\" }",
+        "options": {}
+      },
+      "name": "Respond: Invalid Action",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        -432,
+        1488
+      ],
+      "id": "f0e4e8cc-a858-4006-881a-9484f5686770"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "377e61e0-463d-4f3c-9ddf-e33b6b4b31e1",
+              "name": "resume_link",
+              "value": "={{ \"https://drive.google.com/file/d/\" + $json.id + \"/view\" }}",
+              "type": "string"
+            },
+            {
+              "id": "72ae9431-eae7-4874-8d07-128a67e704c2",
+              "name": "resume_file_id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -224,
+        16
+      ],
+      "id": "a805306f-90cb-4886-aa8b-8df7b649b862",
+      "name": "Edit Fields"
+    }
+  ],
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "swastik2475.app.n8n.cloud",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36",
+            "content-length": "1545",
+            "accept": "*/*",
+            "accept-encoding": "gzip, br",
+            "accept-language": "en-US,en;q=0.9",
+            "cdn-loop": "cloudflare; loops=1; subreqs=1",
+            "cf-connecting-ip": "2401:4900:c4b9:bf76:8d15:3623:c7b6:d5c1",
+            "cf-ew-via": "15",
+            "cf-ipcountry": "IN",
+            "cf-ray": "a0f1699c4e687eb8-MAA",
+            "cf-visitor": "{\"scheme\":\"https\"}",
+            "cf-worker": "n8n.cloud",
+            "content-type": "application/json",
+            "origin": "null",
+            "priority": "u=1, i",
+            "sec-ch-ua": "\"Google Chrome\";v=\"149\", \"Chromium\";v=\"149\", \"Not)A;Brand\";v=\"24\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"Windows\"",
+            "sec-fetch-dest": "empty",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "cross-site",
+            "x-forwarded-for": "2401:4900:c4b9:bf76:8d15:3623:c7b6:d5c1, 172.69.129.146",
+            "x-forwarded-host": "swastik2475.app.n8n.cloud",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "traefik-prod-users-swc-24-564db67655-g9hg4",
+            "x-is-trusted": "yes",
+            "x-real-ip": "2401:4900:c4b9:bf76:8d15:3623:c7b6:d5c1"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "action": "submit_application",
+            "company_name": "samuita",
+            "hr_email": "swastiksharma24705@gmail.com",
+            "job_role": "AI Engineer (Fresher / Entry Level)",
+            "jd_text": "We are hiring\nPosition – AI Engineer (Fresher / Entry Level)\nExperience: 0+ Years\nLocation: Pune\nRole Overview:\nWork on AI-based products and solutions\nDevelop and improve machine learning models\nCollaborate with engineering teams for AI implementation\nAnalyze data and build intelligent systems\nSkills Required:\nPython programming\nMachine Learning basics\nAI/ML concepts\nProblem-solving skills\nKnowledge of NLP/Generative AI is a plus",
+            "email_subject": "Application for AI Engineer (Fresher / Entry Level) - samuita",
+            "email_body": "<p>I am excited to apply for the AI Engineer role at samuita, where I can leverage my skills in AI/ML engineering to develop innovative solutions. With a strong foundation in Python programming and machine learning basics, I am confident in my ability to collaborate with engineering teams and analyze data to build intelligent systems.</p><p>My experience with FastAPI backend and production deployment has provided me with a solid understanding of how to implement AI models in real-world applications. I am also fascinated by the potential of RAG systems and their applications in NLP and generative AI.</p><p>I am eager to contribute to the development of AI-based products and solutions at samuita and learn from the team. Thank you for considering my application. Regards, Swastik",
+            "resume_file_id": "1yzhxC6YIB-GgdUCABWIESws9K1LFFnoa"
+          },
+          "webhookUrl": "https://swastik2475.app.n8n.cloud/webhook/apply",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Switch: Action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch: Action": {
+      "main": [
+        [
+          {
+            "node": "Upload to Drive",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Check: Has Image",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Resume Link (Draft)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Resume File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Read All Applications",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond: Invalid Action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload to Drive": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Resume Link": {
+      "main": [
+        [
+          {
+            "node": "Respond: Resume Saved",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check: Has Image": {
+      "main": [
+        [
+          {
+            "node": "Convert Image to Base64",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent: Extract JD",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert Image to Base64": {
+      "main": [
+        [
+          {
+            "node": "Groq Vision: Extract JD",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Vision: Extract JD": {
+      "main": [
+        [
+          {
+            "node": "Parse Vision Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent: Extract JD",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent: Extract JD",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Vision Response": {
+      "main": [
+        [
+          {
+            "node": "Merge: Extracted Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent: Extract JD": {
+      "main": [
+        [
+          {
+            "node": "Merge: Extracted Fields",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge: Extracted Fields": {
+      "main": [
+        [
+          {
+            "node": "Respond: Extracted Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Resume Link (Draft)": {
+      "main": [
+        [
+          {
+            "node": "AI Agent: Write Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent: Write Email",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent: Write Email": {
+      "main": [
+        [
+          {
+            "node": "Build Draft Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Draft Response": {
+      "main": [
+        [
+          {
+            "node": "Respond: Email Draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Resume File": {
+      "main": [
+        [
+          {
+            "node": "Generate App ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate App ID": {
+      "main": [
+        [
+          {
+            "node": "Send Application Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Application Email": {
+      "main": [
+        [
+          {
+            "node": "Log Application",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Application": {
+      "main": [
+        [
+          {
+            "node": "Respond: Sent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read All Applications": {
+      "main": [
+        [
+          {
+            "node": "Respond: History",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Save Resume Link",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "10642216-8fa2-4b12-948d-f21196db9c21",
+  "meta": {
+    "instanceId": "81bbb6cc1b059138ba4fdd944ef70b9de76dd853ed6f204dfc5228f4c15b911b"
+  },
+  "nodeGroups": [],
+  "id": "kO8Fe1Ceo9Gkybo9",
+  "tags": []
+}
